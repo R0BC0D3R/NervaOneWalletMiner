@@ -44,15 +44,12 @@ jobs:
             with:
                 dotnet-version: 8.0.x
 
-          - name: Install Netloy
-            run: dotnet tool install -g Netloy
-
           - name: Restore Dependencies
             run: |
                 cd ./NervaOneWalletMiner.Desktop
                 dotnet restore
 
-          - name: Build Windows ZIP
+          - name: Build Windows
             run: |
                 cd ./NervaOneWalletMiner.Desktop
                 dotnet publish NervaOneWalletMiner.Desktop.csproj -c release -r ${{ matrix.rid }} -p:publishsinglefile=true
@@ -68,3 +65,57 @@ jobs:
                 path: |
                     ./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/*
                     !./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/*.pdb
+
+# ================================
+#              Linux
+# ================================
+    build-linux:
+        needs: setup
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                rid: ["linux-x64", "linux-arm64"]
+
+        steps:
+          - name: Checkout Repository
+            uses: actions/checkout@v4
+
+          - name: Setup .NET
+            uses: actions/setup-dotnet@v4
+            with:
+                dotnet-version: 8.0.x
+
+          - name: Install Dependencies
+            env:
+                DEBIAN_FRONTEND: noninteractive
+                NEEDRESTART_MODE: l
+            run: |
+                sudo apt update
+                sudo apt-get install -y zip libfuse2t64
+
+          - name: Restore Dependencies
+            run: |
+                cd ./NervaOneWalletMiner.Desktop
+                dotnet restore
+
+          - name: Build Linux
+            run: |
+                cd ./NervaOneWalletMiner.Desktop
+                dotnet publish NervaOneWalletMiner.Desktop.csproj -c release -r ${{ matrix.rid }} -p:publishsinglefile=true
+
+          - name: Prepare Linux Artifacts
+            shell: bash
+            run: |
+              mkdir -p ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Contents
+              mkdir -p ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Resources
+              cp ./Builder/logos/nerva-logo-color.png ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Resources/nerva-logo-color.png
+              cp ./Builder/logos/nerva-logo-color-2.png ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Resources/nerva-logo-color-2.png
+              cp ./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/* ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Contents/
+              cp ./Builder/install ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/install
+              chmod +x ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/install
+
+          - name: Upload Linux Artifacts
+            uses: actions/upload-artifact@v4
+            with:
+                name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
+                path: ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/*
