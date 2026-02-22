@@ -5,9 +5,9 @@ name: ci-build-artifacts
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "automatic_builds" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "automatic_builds" ]
 
 jobs:
     setup:
