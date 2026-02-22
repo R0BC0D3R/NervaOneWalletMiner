@@ -64,7 +64,7 @@ jobs:
           - name: Upload Windows Artifacts
             uses: actions/upload-artifact@v4
             with:
-                name: /nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
+                name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
                 path: |
                     ./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/*
                     !./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/*.pdb
