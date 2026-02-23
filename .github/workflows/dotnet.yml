@@ -119,3 +119,55 @@ jobs:
             with:
                 name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
                 path: ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/*
+
+# ================================
+#              macOS
+# ================================
+    build-macos:
+        needs: setup
+        runs-on: macos-latest
+        strategy:
+            matrix:
+                rid: ["osx-x64", "osx-arm64"]
+
+        steps:
+          - name: Checkout Repository
+            uses: actions/checkout@v4
+
+          - name: Setup .NET
+            uses: actions/setup-dotnet@v4
+            with:
+                dotnet-version: 8.0.x
+
+          - name: Restore Dependencies
+            run: |
+                cd ./NervaOneWalletMiner.Desktop
+                dotnet restore
+
+          - name: Build for MacOS
+            run: |
+                cd ./NervaOneWalletMiner.Desktop
+                dotnet publish NervaOneWalletMiner.Desktop.csproj -c release -r ${{ matrix.rid }} -p:publishsinglefile=true                
+
+          - name: Crete Artifact Directories
+            run: |
+              mkdir -p ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents
+              mkdir -p ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/MacOS
+              mkdir -p ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/Resources
+
+          - name: Generate Plist
+            run: |
+              plist=$(sed -e "s/{APP_VERSION}/0.8.4.0/" -e "s/{DISPLAY_NAME}/NervaOne/" .Builder/Info.plist.template)
+              echo "$plist" > ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/Info.plist
+
+          - name: Copy Icons and Launcher
+            run: |
+              cp ./Builder/logos/nerva-logo-color.icns ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/Resources/nerva-logo-color.icns
+              cp ./Builder/logos/nerva-logo-color-2.icns ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/Resources/nerva-logo-color-2.icns
+              cp -R ./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/* ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/MacOS/
+
+          - name: Upload macOS Artifacts
+            uses: actions/upload-artifact@v4
+            with:
+                name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
+                path: ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/*
