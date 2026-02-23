@@ -48,7 +48,7 @@ jobs:
                 cd ./NervaOneWalletMiner.Desktop
                 dotnet restore
 
-          - name: Build Windows
+          - name: Build for Windows
             run: |
                 cd ./NervaOneWalletMiner.Desktop
                 dotnet publish NervaOneWalletMiner.Desktop.csproj -c release -r ${{ matrix.rid }} -p:publishsinglefile=true
@@ -97,23 +97,26 @@ jobs:
                 cd ./NervaOneWalletMiner.Desktop
                 dotnet restore
 
-          - name: Build Linux
+          - name: Build for Linux
             run: |
                 cd ./NervaOneWalletMiner.Desktop
                 dotnet publish NervaOneWalletMiner.Desktop.csproj -c release -r ${{ matrix.rid }} -p:publishsinglefile=true
 
-          - name: Prepare Linux Artifacts
+          - name: Create Artifact Directories
             shell: bash
             run: |
               mkdir -p ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Contents
               mkdir -p ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Resources
+
+          - name: Copy Icons and Files
+            run: |              
               cp ./Builder/logos/nerva-logo-color.png ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Resources/nerva-logo-color.png
               cp ./Builder/logos/nerva-logo-color-2.png ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Resources/nerva-logo-color-2.png
               cp ./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/* ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/Contents/
               cp ./Builder/install ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/install
               chmod +x ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/install
 
-          - name: Upload Linux Artifacts
+          - name: Upload Artifacts
             uses: actions/upload-artifact@v4
             with:
                 name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
@@ -165,8 +168,8 @@ jobs:
               cp ./Builder/logos/nerva-logo-color-2.icns ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/Resources/nerva-logo-color-2.icns
               cp -R ./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/* ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/MacOS/
 
-          - name: Upload macOS Artifacts
+          - name: Upload Artifacts
             uses: actions/upload-artifact@v4
             with:
                 name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
-                path: ./NervaOneWalletMiner.Desktop/bin/*
+                path: ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/
