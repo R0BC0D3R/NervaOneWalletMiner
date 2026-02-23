@@ -149,7 +149,7 @@ jobs:
                 cd ./NervaOneWalletMiner.Desktop
                 dotnet publish NervaOneWalletMiner.Desktop.csproj -c release -r ${{ matrix.rid }} -p:publishsinglefile=true                
 
-          - name: Crete Artifact Directories
+          - name: Create Artifact Directories
             run: |
               mkdir -p ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents
               mkdir -p ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/MacOS
@@ -157,7 +157,7 @@ jobs:
 
           - name: Generate Plist
             run: |
-              plist=$(sed -e "s/{APP_VERSION}/0.8.4.0/" -e "s/{DISPLAY_NAME}/NervaOne/" .Builder/Info.plist.template)
+              plist=$(sed -e "s/{APP_VERSION}/0.8.4.0/" -e "s/{DISPLAY_NAME}/NervaOne/" ./Builder/Info.plist.template)
               echo "$plist" > ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/Contents/Info.plist
 
           - name: Copy Icons and Launcher
