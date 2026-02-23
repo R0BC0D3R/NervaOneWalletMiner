@@ -24,6 +24,14 @@ jobs:
               version="${currVer#v}"
               echo "version=$version" >> $GITHUB_OUTPUT
               echo "Extracted version: $version"
+              
+          - name: Get NervaOne Version
+            id: get_app_version
+            shell: bash
+            run: |
+              ver=$(awk '/public const string Version = /{ print $6 }' < ./NervaOneWalletMiner/Helpers/GlobalData.cs)
+              export APP_VERSION=$(echo ${ver} | tr -d '";')
+              echo App version detected as ${APP_VERSION}: ${APP_CODENAME}
 
 # ================================
 #              Windows
@@ -170,4 +178,4 @@ jobs:
             uses: actions/upload-artifact@v4
             with:
                 name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
-                path: ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/*
+                path: ./NervaOneWalletMiner.Desktop/bin/*
