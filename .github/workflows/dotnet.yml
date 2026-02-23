@@ -24,14 +24,6 @@ jobs:
               version="${currVer#v}"
               echo "version=$version" >> $GITHUB_OUTPUT
               echo "Extracted version: $version"
-              
-          - name: Get NervaOne Version
-            id: get_app_version
-            shell: bash
-            run: |
-              ver=$(awk '/public const string Version = /{ print $6 }' < ./NervaOneWalletMiner/Helpers/GlobalData.cs)
-              export APP_VERSION=$(echo ${ver} | tr -d '";')
-              echo App version detected as ${APP_VERSION}: ${APP_CODENAME}
 
 # ================================
 #              Windows
@@ -51,6 +43,12 @@ jobs:
             uses: actions/setup-dotnet@v4
             with:
                 dotnet-version: 8.0.x
+
+          - name: Get NervaOne version
+            run: |
+                ver=$(awk '/public const string Version = /{ print $6 }' < ./NervaOneWalletMiner/Helpers/GlobalData.cs)
+                export APP_VERSION=$(echo ${ver} | tr -d '";')
+                echo App version detected as ${APP_VERSION}: ${APP_CODENAME}
 
           - name: Restore Dependencies
             run: |
