@@ -26,6 +26,9 @@ jobs:
               echo "version=$version" >> $GITHUB_OUTPUT
               echo "Extracted version: $version"
 
+          - name: Checkout Repository
+            uses: actions/checkout@v4
+                          
           - name: Extract NervaOne Version
             id: get_nerva_one_version
             shell: bash
