@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         outputs:
             version: ${{ steps.get_version.outputs.version }}
-            nervaoneversion: ${{ steps.get_nerva_one_version.outputs.version }}
+            nervaoneversion: ${{ steps.get_nerva_one_version.outputs.nervaoneversion }}
         env:
             currVer: ${{ github.ref_name }}
         steps:
@@ -73,7 +73,7 @@ jobs:
           - name: Upload Windows Artifacts
             uses: actions/upload-artifact@v4
             with:
-                name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
+                name: nervaone-desktop-${{ steps.get_nerva_one_version.outputs.nervaoneversion }}-${{ matrix.rid }}
                 path: |
                     ./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/*
                     !./NervaOneWalletMiner.Desktop/bin/release/net8.0/${{ matrix.rid }}/publish/*.pdb
@@ -129,7 +129,7 @@ jobs:
           - name: Upload Linux Artifacts
             uses: actions/upload-artifact@v4
             with:
-                name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
+                name: nervaone-desktop-${{ steps.get_nerva_one_version.outputs.nervaoneversion }}-${{ matrix.rid }}
                 path: ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop/*
 
 # ================================
@@ -181,5 +181,5 @@ jobs:
           - name: Upload macOS Artifacts
             uses: actions/upload-artifact@v4
             with:
-                name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
+                name: nervaone-desktop-${{ steps.get_nerva_one_version.outputs.nervaoneversion }}-${{ matrix.rid }}
                 path: ./NervaOneWalletMiner.Desktop/bin/*
