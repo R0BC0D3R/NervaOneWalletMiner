@@ -22,7 +22,7 @@ jobs:
             run: |
                 version=$(awk '/public const string Version = /{ print $6 }' < ./NervaOneWalletMiner/Helpers/GlobalData.cs)
                 export version=$(echo ${version} | tr -d '";')
-                echo "App version detected: $version"
+                echo "version=$version" >> $GITHUB_OUTPUT
 
 # ================================
 #              Windows
