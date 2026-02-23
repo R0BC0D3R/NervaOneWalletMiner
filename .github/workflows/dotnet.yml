@@ -28,13 +28,13 @@ jobs:
 
           - name: Checkout Repository
             uses: actions/checkout@v4
-                          
+
           - name: Extract NervaOne Version
             id: get_nerva_one_version
             shell: bash
             run: |
                 nervaoneversion=$(awk '/public const string Version = /{ print $6 }' < ./NervaOneWalletMiner/Helpers/GlobalData.cs)
-                export nervaoneversion=$(echo ${ver} | tr -d '";')
+                export nervaoneversion=$(echo ${nervaoneversion} | tr -d '";')
                 echo "App version detected: $nervaoneversion"
 
 # ================================
