@@ -172,4 +172,6 @@ jobs:
             uses: actions/upload-artifact@v4
             with:
                 name: nervaone-desktop-${{ needs.setup.outputs.version }}-${{ matrix.rid }}
-                path: ./NervaOneWalletMiner.Desktop/bin/NervaOneDesktop.app/
+                path: |
+                  ./NervaOneWalletMiner.Desktop/bin/*
+                  !./NervaOneWalletMiner.Desktop/bin/release/
