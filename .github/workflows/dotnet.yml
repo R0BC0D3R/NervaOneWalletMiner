@@ -14,6 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         outputs:
             version: ${{ steps.get_version.outputs.version }}
+            nervaoneversion: ${{ steps.get_nerva_one_version.outputs.version }}
         env:
             currVer: ${{ github.ref_name }}
         steps:
@@ -24,6 +25,14 @@ jobs:
               version="${currVer#v}"
               echo "version=$version" >> $GITHUB_OUTPUT
               echo "Extracted version: $version"
+
+          - name: Extract NervaOne Version
+            id: get_nerva_one_version
+            shell: bash
+            run: |
+                nervaoneversion=$(awk '/public const string Version = /{ print $6 }' < ./NervaOneWalletMiner/Helpers/GlobalData.cs)
+                export nervaoneversion=$(echo ${ver} | tr -d '";')
+                echo "App version detected: $nervaoneversion"
 
 # ================================
 #              Windows
@@ -43,12 +52,6 @@ jobs:
             uses: actions/setup-dotnet@v4
             with:
                 dotnet-version: 8.0.x
-
-          - name: Get NervaOne version
-            run: |
-                ver=$(awk '/public const string Version = /{ print $6 }' < ./NervaOneWalletMiner/Helpers/GlobalData.cs)
-                export APP_VERSION=$(echo ${ver} | tr -d '";')
-                echo App version detected as ${APP_VERSION}: ${APP_CODENAME}
 
           - name: Restore Dependencies
             run: |
